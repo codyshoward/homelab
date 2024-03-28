@@ -10,7 +10,7 @@
       ignore_errors: true
 
     - name: Get last update time from yum.log
-      shell: stat -c %y /var/log/yum.log | cut -d' ' -f1
+      shell: stat -c %y /var/log/dnf.log | cut -d' ' -f1
       register: last_update
       changed_when: false
 
