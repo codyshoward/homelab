@@ -1,0 +1,120 @@
+---
+- name: Setup K3s environment
+  hosts: your_remote_host
+  become: yes
+  vars:
+    namespace: awx
+    kubeconfig_path: /etc/rancher/k3s/k3s.yaml # Example for k3s, adjust as needed
+    kustomization_directory: /path/to/kustomization/directory/on/remote/server
+  tasks:
+    - name: Open required firewall ports and settings
+      firewalld:
+        service: "{{ item.service }}"
+        permanent: true
+        state: enabled
+        zone: "{{ item.zone }}"
+        masquerade: "{{ item.masquerade | default(omit) }}"
+        immediate: yes
+      loop:
+        - { service: 'https', zone: 'public' }
+        - { service: 'masquerade', zone: 'public', masquerade: true }
+      notify: reload firewalld
+
+    - name: Add custom firewall ports
+      firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+        zone: public
+        immediate: yes
+      loop:
+        - 8080/tcp
+        - 8443/tcp
+        - 443/tcp
+        - 80/tcp
+        - 6443/tcp
+
+    - name: Copy AWX Lab configuration file
+      ansible.builtin.copy:
+        src: templates/awx-lab.yml
+        dest: /awx-lab.yml
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copy Kustomization file
+      ansible.builtin.copy:
+        src: templates/kustomization.yaml
+        dest: /kustomization.yaml
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Allow trusted zones
+      firewalld:
+        source: "10.0.0.0/8"
+        zone: trusted
+        state: enabled
+        permanent: true
+        immediate: yes
+      loop_control:
+        loop_var: source
+
+    - name: Enable IP forwarding
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        reload: yes
+
+    - name: Install K3s
+      ansible.builtin.shell: |
+        curl -sfL https://get.k3s.io | sh -
+      args:
+        creates: "/usr/local/bin/k3s"
+
+    - name: Adjust permissions on the K3s kubeconfig file
+      file:
+        path: /etc/rancher/k3s/k3s.yaml
+        mode: '0644'
+
+    - name: Install git
+      package:
+        name: git
+        state: present
+
+    - name: Install kustomize
+      ansible.builtin.shell: |
+        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+        mv kustomize /usr/local/bin/
+      args:
+        creates: "/usr/local/bin/kustomize"
+
+    - name: Create a namespace for AWX
+      community.kubernetes.k8s:
+        name: "{{ namespace }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Set kubectl context to the AWX namespace
+      ansible.builtin.shell: |
+        kubectl config set-context --current --namespace={{ namespace }}
+
+    - name: Apply kustomization
+      ansible.builtin.shell: |
+        kustomize build . | kubectl apply -f -
+
+    - name: Apply kustomization with kubectl
+      ansible.builtin.shell:
+        cmd: kubectl apply -k {{ kustomization_directory }}
+      args:
+        executable: /bin/bash
+      environment:
+        KUBECONFIG: "{{ kubeconfig_path }}"
+
+  handlers:
+    - name: reload firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
