@@ -1,0 +1,19 @@
+---
+- name: Check for updates on CentOS hosts
+  hosts: all
+  become: yes
+  tasks:
+    - name: Check available updates
+      shell: yum check-update --quiet | grep -v "^$" | wc -l
+      register: updates
+      changed_when: false
+      ignore_errors: true
+
+    - name: Get last update time from yum.log
+      shell: stat -c %y /var/log/yum.log | cut -d' ' -f1
+      register: last_update
+      changed_when: false
+
+    - name: Display summary
+      debug:
+        msg: "Hostname: {{ ansible_hostname }}, Outstanding Updates: {{ updates.stdout }}, Last Patched: {{ last_update.stdout }}"
