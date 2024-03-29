@@ -1,6 +1,6 @@
 ---
 - name: Setup K3s environment
-  hosts: your_remote_host
+  hosts: all
   become: yes
   vars:
     namespace: awx
