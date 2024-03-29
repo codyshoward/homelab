@@ -6,6 +6,7 @@
     namespace: awx
     kubeconfig_path: /etc/rancher/k3s/k3s.yaml # Example for k3s, adjust as needed
     kustomization_directory: /path/to/kustomization/directory/on/remote/server
+    remote_tmp_path: "/tmp/ansible_tmp"
   tasks:
     - name: Open required firewall ports and settings
       firewalld:
