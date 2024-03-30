@@ -14,11 +14,10 @@
         permanent: "{{ item.permanent | default(true) }}"
         state: "{{ item.state | default('enabled') }}"
         zone: "{{ item.zone }}"
-        masquerade: "{{ item.masquerade | default(true) }}"
         immediate: "{{ item.immediate | default(true) }}"
       loop:
-        - { service: 'https', zone: 'public', masquerade: false }
-        - { service: 'masquerade', zone: 'public', masquerade: true }
+        - { service: 'https', zone: 'public' }
+        - { service: 'masquerade', zone: 'public' }
 
 
     - name: Add custom firewall ports
