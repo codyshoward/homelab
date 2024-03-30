@@ -3,7 +3,7 @@
   hosts: all
   become: yes
   vars:
-    namespace: awx
+    awx_namespace: awx
     kubeconfig_path: /etc/rancher/k3s/k3s.yaml # Example for k3s, adjust as needed
     kustomization_directory: /path/to/kustomization/directory/on/remote/server
     remote_tmp_path: "/tmp/ansible_tmp"
@@ -93,14 +93,14 @@
 
     - name: Create a namespace for AWX
       kubernetes.core.k8s:
-        name: "{{ namespace }}"
+        name: "{{ awx_namespace }}"
         api_version: v1
         kind: Namespace
         state: present
 
     - name: Set kubectl context to the AWX namespace
       ansible.builtin.shell: |
-        kubectl config set-context --current --namespace={{ namespace }}
+        kubectl config set-context --current --namespace={{ awx_namespace }}
 
     - name: Apply kustomization
       ansible.builtin.shell: |
