@@ -92,7 +92,7 @@
         creates: "/usr/local/bin/kustomize"
 
     - name: Create a namespace for AWX
-      community.kubernetes.k8s:
+      kubernetes.core.k8s:
         name: "{{ namespace }}"
         api_version: v1
         kind: Namespace
