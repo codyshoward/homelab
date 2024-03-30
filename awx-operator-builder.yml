@@ -9,7 +9,7 @@
     remote_tmp_path: "/tmp/ansible_tmp"
   tasks:
     - name: Open required firewall ports and settings
-      firewalld:
+      ansible.posix.firewalld:
         service: "{{ item.service }}"
         permanent: true
         state: enabled
@@ -22,7 +22,7 @@
       notify: reload firewalld
 
     - name: Add custom firewall ports
-      firewalld:
+      ansible.posix.firewalld:
         port: "{{ item }}"
         permanent: true
         state: enabled
