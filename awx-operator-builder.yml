@@ -17,8 +17,13 @@
         immediate: "{{ item.immediate | default(true) }}"
       loop:
         - { service: 'https', zone: 'public' }
-        - { service: 'masquerade', zone: 'public' }
-
+     
+   - name: Masquerade 
+     ansible.posix.firewalld:
+        masquerade: true
+        state: enabled
+        permanent: true
+        zone: public
 
     - name: Add custom firewall ports
       ansible.posix.firewalld:
