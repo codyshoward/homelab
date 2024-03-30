@@ -11,15 +11,15 @@
     - name: Open required firewall ports and settings
       ansible.posix.firewalld:
         service: "{{ item.service }}"
-        permanent: true
-        state: enabled
+        permanent: "{{ item.permanent | default(true) }}"
+        state: "{{ item.state | default('enabled') }}"
         zone: "{{ item.zone }}"
-        masquerade: "{{ item.masquerade | default(omit) }}"
-        immediate: yes
-      loop:
-        - { service: 'https', zone: 'public' }
-        - { service: 'masquerade', zone: 'public', masquerade: true }
-      notify: reload firewalld
+        masquerade: "{{ item.masquerade | default(true) }}"
+        immediate: "{{ item.immediate | default(true) }}"
+     loop:
+       - { service: 'https', zone: 'public', masquerade: false }
+       - { service: 'masquerade', zone: 'public', masquerade: true }
+
 
     - name: Add custom firewall ports
       ansible.posix.firewalld:
