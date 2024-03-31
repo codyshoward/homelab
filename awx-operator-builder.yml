@@ -24,6 +24,11 @@
         state: enabled
         permanent: true
         zone: public
+
+    - name: Install kubernetes Python library
+      pip:
+        name: kubernetes
+        state: present
         
     - name: Install the latest version of Apache
       ansible.builtin.yum:
