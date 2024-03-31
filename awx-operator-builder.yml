@@ -108,11 +108,11 @@
       args:
         creates: "/usr/local/bin/kustomize"
 
-    - name: Create a k8s namespace
+    - name: Ensure the myapp Namespace exists.
       kubernetes.core.k8s:
-        name: awx
         api_version: v1
         kind: Namespace
+        name: awx
         state: present
 
     - name: Set kubectl context to the AWX namespace
