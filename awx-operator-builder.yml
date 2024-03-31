@@ -32,8 +32,11 @@
         
     - name: Install the latest version of Apache
       ansible.builtin.yum:
-        name: tar
+        name: "{{ item}}"
         state: latest
+      loop:
+        - pip
+        - tar
 
     - name: Add custom firewall ports
       ansible.posix.firewalld:
