@@ -27,7 +27,7 @@
         
     - name: Install the latest version of Apache
       ansible.builtin.yum:
-        name: httpd
+        name: tar
         state: latest
 
     - name: Add custom firewall ports
