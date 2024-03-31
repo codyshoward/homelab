@@ -25,11 +25,6 @@
         permanent: true
         zone: public
 
-    - name: Install kubernetes Python library
-      pip:
-        name: kubernetes
-        state: present
-        
     - name: Install the latest version of Apache
       ansible.builtin.yum:
         name: "{{ item}}"
@@ -37,7 +32,12 @@
       loop:
         - pip
         - tar
-
+        
+    - name: Install kubernetes Python library
+      pip:
+        name: kubernetes
+        state: present
+    
     - name: Add custom firewall ports
       ansible.posix.firewalld:
         port: "{{ item }}"
