@@ -1,11 +1,10 @@
 ---
-- name: Setup K3s environment
+- name: Deploy K3s and AWX
   hosts: all
   become: yes
   vars:
     awx_namespace: awx
     kubeconfig_path: /etc/rancher/k3s/k3s.yaml # Example for k3s, adjust as needed
-    kustomization_directory: /path/to/kustomization/directory/on/remote/server
     remote_tmp_path: "/tmp/ansible_tmp"
   tasks:
     - name: Open required firewall ports and settings
@@ -120,4 +119,15 @@
         kubectl create namespace {{ awx_namespace }}
         kubectl config set-context --namespace={{ awx_namespace }} --current
         kustomize build . | kubectl apply -f -
-        
+      ignore_errors: yes
+
+   - name: Set kubectl context to the AWX namespace and create name space
+      ansible.builtin.shell: |
+        kubectl apply -k .
+      ignore_errors: yes
+
+  - name: Set kubectl context to the AWX namespace and create name space
+      ansible.builtin.shell: |
+        kubectl get pods -n awx
+        kubectl get svc -n awx
+      ignore_errors: yes
