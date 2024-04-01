@@ -116,16 +116,6 @@
         kubectl config set-context --namespace={{ awx_namespace }} --current
         kustomize build . | kubectl apply -f -
 
-
-
-    - name: Apply kustomization with kubectl
-      ansible.builtin.shell:
-        cmd: kubectl apply -k {{ kustomization_directory }}
-      args:
-        executable: /bin/bash
-      environment:
-        KUBECONFIG: "{{ kubeconfig_path }}"
-
   handlers:
     - name: reload firewalld
       ansible.builtin.service:
