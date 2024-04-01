@@ -108,15 +108,11 @@
       args:
         creates: "/usr/local/bin/kustomize"
 
-    - name: Ensure the myapp Namespace exists.
-      kubernetes.core.k8s:
-        api_version: v1
-        kind: Namespace
-        name: awx
-        state: present
 
-    - name: Set kubectl context to the AWX namespace
+    - name: Set kubectl context to the AWX namespace and create name space
       ansible.builtin.shell: |
+        export NAMESPACE={{ awx_namespace }}
+        kubectl create namespace {{ awx_namespace }}
         kubectl config set-context --current --namespace={{ awx_namespace }}
 
     - name: Apply kustomization
