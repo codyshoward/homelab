@@ -55,7 +55,7 @@
     - name: Copy AWX Lab configuration file
       ansible.builtin.copy:
         src: templates/awx-lab.yml
-        dest: /awx-lab.yml
+        dest: /root/awx-lab.yml
         owner: root
         group: root
         mode: '0644'
@@ -63,7 +63,7 @@
     - name: Copy Kustomization file
       ansible.builtin.copy:
         src: templates/kustomization.yaml
-        dest: /kustomization.yaml
+        dest: /roo/kustomization.yaml
         owner: root
         group: root
         mode: '0644'
