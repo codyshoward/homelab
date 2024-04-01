@@ -63,7 +63,7 @@
     - name: Copy Kustomization file
       ansible.builtin.copy:
         src: templates/kustomization.yaml
-        dest: /roo/kustomization.yaml
+        dest: /root/kustomization.yaml
         owner: root
         group: root
         mode: '0644'
