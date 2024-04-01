@@ -126,8 +126,26 @@
         kubectl apply -k .
       ignore_errors: yes
 
+    - name: Wait for 3 minutes
+      ansible.builtin.pause:
+        seconds: 180
+
     - name: List Pods and Servics
       ansible.builtin.shell: |
         kubectl get pods -n awx
         kubectl get svc -n awx
       ignore_errors: yes
+
+    - name: Get port information from Kubernetes service
+      ansible.builtin.shell: kubectl get svc -n {{ awx_namespace }} {{ kubernetes_service_name }} -o=jsonpath='{.spec.ports[*].port}'
+      register: k8s_service_ports
+      ignore_errors: yes
+
+    - name: Update firewall rules
+      ansible.builtin.firewalld:
+        port: "{{ item }}"
+        permanent: yes
+        state: enabled
+        immediate: yes
+      loop: "{{ k8s_service_ports.stdout.split(' ') }}"
+      when: k8s_service_ports.rc == 0
