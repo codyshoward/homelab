@@ -121,12 +121,12 @@
         kustomize build . | kubectl apply -f -
       ignore_errors: yes
 
-   - name: Apply Kubectl
+    - name: Apply Kubectl
       ansible.builtin.shell: |
         kubectl apply -k .
       ignore_errors: yes
 
-  - name: List Pods and Servics
+    - name: List Pods and Servics
       ansible.builtin.shell: |
         kubectl get pods -n awx
         kubectl get svc -n awx
