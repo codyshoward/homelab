@@ -113,11 +113,10 @@
       ansible.builtin.shell: |
         export NAMESPACE={{ awx_namespace }}
         kubectl create namespace {{ awx_namespace }}
-        kubectl config set-context --current --namespace={{ awx_namespace }}
-
-    - name: Apply kustomization
-      ansible.builtin.shell: |
+        kubectl config set-context --namespace={{ awx_namespace }} --current
         kustomize build . | kubectl apply -f -
+
+
 
     - name: Apply kustomization with kubectl
       ansible.builtin.shell:
