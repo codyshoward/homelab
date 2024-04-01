@@ -85,6 +85,11 @@
         state: present
         reload: yes
 
+    - name: reload firewalld
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
+
     - name: Install K3s
       ansible.builtin.shell: |
         curl -sfL https://get.k3s.io | sh -
@@ -115,9 +120,4 @@
         kubectl create namespace {{ awx_namespace }}
         kubectl config set-context --namespace={{ awx_namespace }} --current
         kustomize build . | kubectl apply -f -
-
-  handlers:
-    - name: reload firewalld
-      ansible.builtin.service:
-        name: firewalld
-        state: reloaded
+        
