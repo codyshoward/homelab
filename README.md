@@ -1,4 +1,7 @@
 # HomeLab
+
+Brandon is awesome!@!! 
+
 Functional Projects:
 1. awx-operator-builder: Builds out K3S/AWX operator.
      Prereqs: Centos 9 Server (no gui) and destination host must be able to resovle its hostname and fqdn.
