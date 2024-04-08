@@ -1,5 +1,5 @@
 ---
-- name: Scan hosts for available patches
+- name: Scan hosts for available patches and send email report
   hosts: all
   gather_facts: yes
 
@@ -8,6 +8,23 @@
       package_facts:
         manager: auto
 
-    - name: Display available updates
+    - name: Generate update summary
+      set_fact:
+        update_summary: |
+          Hostname: {{ ansible_hostname }}
+          Outstanding Updates: {{ ansible_facts.package_updates|length }}
+          Last Patched: {{ ansible_date_time.date }}
+
+    - name: Display summary
       debug:
-        msg: "Host {{ ansible_hostname }} has {{ ansible_facts.package_updates|length }} available patches."
+        var: update_summary
+
+    - name: Send email report
+      mail:
+        host: "mail.google.com"
+        port: 25  # or your SMTP server's port
+        subject: "Patch Report for {{ ansible_date_time.date }}"
+        body: "{{ update_summary }}"
+        from: "codyshoward@gmail.com"
+        to:
+          - "codyshoward@gmail.com"
