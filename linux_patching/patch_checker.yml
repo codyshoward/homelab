@@ -1,0 +1,13 @@
+---
+- name: Scan hosts for available patches
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Get available package updates
+      package_facts:
+        manager: auto
+
+    - name: Display available updates
+      debug:
+        msg: "Host {{ ansible_hostname }} has {{ ansible_facts.package_updates|length }} available patches."
